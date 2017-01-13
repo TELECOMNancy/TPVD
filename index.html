@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TP Visualisation</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node--leaf {
+  fill: white;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+    <script>
+    function makeSVG(svgClass, attribute, color) {
+
+          var svg = d3.select("body").append("svg").attr("width","500").attr("height","500").attr("class",svgClass),
+    margin = 20,
+    diameter = +svg.attr("width"),
+    g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+    var defs = svg.append("defs");
+
+
+var pack = d3.pack()
+    .size([diameter - margin, diameter - margin])
+    .padding(2);
+
+
+    d3.tsv("nba-no-hierarchy.txt", function(error, root) {
+        if (error) throw error;
+        console.log(root);
+
+        root = d3.stratify()
+            .id(function(d) { return d.Player; })
+            .parentId(function(d) { return d.Team; })
+            (root);
+
+
+        root = d3.hierarchy(root)
+          .sum(function(d) { return d.data.Points; })
+          .sort(function(a,b) { return b.value - a.value; });
+        console.log(root);
+        
+
+
+var focus = root,
+      nodes = pack(root).descendants(),
+      view;
+
+  var circle = g.selectAll("circle")
+    .data(nodes)
+    .enter().append("circle")
+      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+        .style("fill", function (d,i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : color(-1); })
+      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+  var text = g.selectAll("text")
+    .data(nodes)
+    .enter().append("text")
+      .attr("class", "label")
+      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
+      .text(function(d) { return d.data.id; });
+
+  var node = g.selectAll("circle,text");
+
+  svg
+      .style("background", "white")
+      .on("click", function() { zoom(root); });
+
+  zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+  function zoom(d) {
+    var focus0 = focus; focus = d;
+
+    var transition = d3.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .tween("zoom", function(d) {
+          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+          return function(t) { zoomTo(i(t)); };
+        });
+
+    transition.selectAll("text")
+      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+  }
+
+  function zoomTo(v) {
+    var k = diameter / v[2]; view = v;
+    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    circle.attr("r", function(d) { return d.r * k; });
+  }
+});
+    }
+
+
+
+var colorTop = d3.scaleLinear()
+    .domain([-1, 0,1600,1890,1891])
+    .range(["lightgrey","black","black", "lightgrey", "white"])
+    .interpolate(d3.interpolateHcl);
+var color = d3.scaleLinear()
+    .domain([-1, 0,50,80])
+    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
+    .interpolate(d3.interpolateHcl);
+var colorun = d3.scaleLinear()
+    .domain([-1, 0,60,80])
+    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
+    .interpolate(d3.interpolateHcl);
+var colordeux = d3.scaleLinear()
+    .domain([-1, 0,2,8])
+    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
+    .interpolate(d3.interpolateHcl);
+var colortrois = d3.scaleLinear()
+    .domain([-1, 0,2000,3500])
+    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
+    .interpolate(d3.interpolateHcl);
+    
+        makeSVG("premier", "Games Started",color);
+        makeSVG("zero", "Points",colorTop);
+        makeSVG("deuxieme", "Games Played", colorun);
+        makeSVG("troisieme", "Minutes", colortrois);
+        makeSVG("quatrieme", "Total Rebounds/Game", colordeux);
+    </script>
+</body>
+</html>
