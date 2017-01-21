@@ -16,11 +16,6 @@ h2 {
   cursor: pointer;
 }
 
-.node:hover {
-  stroke: #000;
-  stroke-width: 1.5px;
-}
-
 .node--leaf {
   fill: white;
 }
@@ -36,6 +31,12 @@ h2 {
 .node--leaf {
   pointer-events: none;
 }
+
+circle.hovered{
+    
+  stroke: black;
+  stroke-width: 1.5px;
+    }
 </style>
 </head>
 
@@ -46,10 +47,11 @@ h2 {
         <p>Les valeurs sont colorées selon leur quantile. Le rayon des cercles correspond au nombre de points du joueur.</p>
     </div>
     <script>
-    var legendSvg = d3.select('#legend-svg')
-        .attr('width', 400)
-        .attr('height', 40)
-        .append('g')
+        /* BEGIN Scale */
+        var legendSvg = d3.select('#legend-svg')
+            .attr('width', 400)
+            .attr('height', 40)
+            .append('g')
 
         legendSvg.append('rect')
             .attr('width', 280)
@@ -57,7 +59,6 @@ h2 {
             .attr("transform", "translate(10,0)")
             .style('fill', 'url(#gradientScale)');
 
-        // create a scale and axis for the legend
         var legendScale = d3.scaleLinear()
             .domain([0, 100])
             .range([0, 280]);
@@ -162,11 +163,15 @@ h2 {
             .attr("offset", "100%")
             .attr("stop-color", "#9e0142")
             .attr("stop-opacity", 1);
+        /* END scale */
+
+        /* Global data for the svgs */
         const diameter = 300;
         const margin = 4;
         var svgs = {};
         var views = {};
-        
+        var currentlyHovered;
+        /* Make a new graph based on one attribute */
         function makeSVG(svgId, attribute) {
             var div = d3.select("body").append("div").attr("style", "display:inline-block;min-height: "+diameter+", min-width:"+diameter);
             div.append("h2").text(attribute);
@@ -200,10 +205,17 @@ h2 {
                 svgs[svgId].circle = g.selectAll("circle")
                     .data(svgs[svgId].nodes)
                     .enter().append("circle")
-                    .attr("id", function (d) { return d.data.id.replace(/\s/g, "") + "-" + svgId; })
+                    .attr("id", function (d) { return d.data.id.replace(/\s/g, "") })
                     .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
                     .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#efefef"; })
-                    .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); });
+                    .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); })
+                    .on("mouseover", function(d) { 
+                        currentlyHovered = d.data.id.split("-")[0].replace(/\s/g, "");
+                        d3.selectAll("circle[id^="+currentlyHovered+"]").classed("hovered", true);
+                     })
+                    .on("mouseout", function(d) { 
+                        if(currentlyHovered) d3.selectAll("circle[id^="+currentlyHovered+"]").classed("hovered", false);
+                     });
 
                 var text = g.selectAll("text")
                     .data(svgs[svgId].nodes)
