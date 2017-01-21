@@ -41,6 +41,10 @@ circle.hovered{
 .ghost {
     opacity: 0.1;
 }
+
+.hidden-labels {
+    display: none !important;
+}
 </style>
 </head>
 
@@ -51,6 +55,7 @@ circle.hovered{
         <p>Les valeurs sont colorées selon leur quantile. Le rayon des cercles correspond au nombre de points du joueur.</p>
         <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
         <button onclick="unghostAll()">Réinitialiser</button>
+        <button onclick="toggleLabels()">Toggle labels</button>
         </header>
     </div>
     <script>
@@ -179,6 +184,7 @@ circle.hovered{
         var views = {};
         var currentlyHovered;
         var tenBestScores;
+        var showLabel = true;
         /* Make a new graph based on one attribute */
         function makeSVG(svgId, attribute) {
             var div = d3.select("body").append("div").attr("style", "display:inline-block;min-height: "+diameter+", min-width:"+diameter);
@@ -303,6 +309,16 @@ circle.hovered{
 
         function unghostAll() {
             d3.selectAll(".ghost").classed("ghost", false);
+        }
+
+        function toggleLabels() {
+            if (showLabel) {
+                showLabel = false;
+                d3.selectAll(".label").classed("hidden-labels", true);
+            } else {
+                showLabel = true;
+                d3.selectAll(".label.hidden-labels").classed("hidden-labels", false);
+            }
         }
     </script>
 </body>
