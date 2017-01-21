@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>TP Visualisation</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <style>
-
+h2 {
+    font-size: 12px;
+    margin: 0;
+    padding:0;
+    text-align: center;
+}
 .node {
   cursor: pointer;
 }
@@ -22,7 +28,7 @@
 .label {
   font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+  text-shadow: 0 2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff, 0 -2px 0 #fff;
 }
 
 .label,
@@ -32,119 +38,232 @@
 }
 </style>
 </head>
+
 <body>
+    <header><h1>NBA</h1>
+    <div class="scale">
+        <svg id="legend-svg"></svg></header>
+        <p>Les valeurs sont colorées selon leur quantile. Le rayon des cercles correspond au nombre de points du joueur.</p>
+    </div>
     <script>
-    function makeSVG(svgClass, attribute, color) {
+    var legendSvg = d3.select('#legend-svg')
+        .attr('width', 400)
+        .attr('height', 40)
+        .append('g')
 
-          var svg = d3.select("body").append("svg").attr("width","500").attr("height","500").attr("class",svgClass),
-    margin = 20,
-    diameter = +svg.attr("width"),
-    g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-    var defs = svg.append("defs");
+        legendSvg.append('rect')
+            .attr('width', 280)
+            .attr('height', 15)
+            .attr("transform", "translate(10,0)")
+            .style('fill', 'url(#gradientScale)');
+
+        // create a scale and axis for the legend
+        var legendScale = d3.scaleLinear()
+            .domain([0, 100])
+            .range([0, 280]);
+
+        var legendAxis = d3.axisBottom()
+            .scale(legendScale)
+            .tickValues(d3.range(0, 100, 10))
+            .tickFormat(d3.format("d"));
+
+        legendSvg.append("g")
+            .attr("class", "legend axis")
+            .attr("transform", "translate(10,15)")
+            .call(legendAxis);
+
+        var gradient = legendSvg.append('defs')
+            .append('linearGradient')
+            .attr('id', 'gradientScale')
+            .attr('x1', '0%') // left
+            .attr('y1', '0%')
+            .attr('x2', '100%') // to right
+            .attr('y2', '0%')
+            .attr('spreadMethod', 'pad');
 
 
-var pack = d3.pack()
-    .size([diameter - margin, diameter - margin])
-    .padding(2);
-
-
-    d3.tsv("nba-no-hierarchy.txt", function(error, root) {
-        if (error) throw error;
-        console.log(root);
-
-        root = d3.stratify()
-            .id(function(d) { return d.Player; })
-            .parentId(function(d) { return d.Team; })
-            (root);
-
-
-        root = d3.hierarchy(root)
-          .sum(function(d) { return d.data.Points; })
-          .sort(function(a,b) { return b.value - a.value; });
-        console.log(root);
+        gradient.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "#5e4fa2")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "10%")
+            .attr("stop-color", "#5e4fa2")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "10%")
+            .attr("stop-color", "#3388bd")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "20%")
+            .attr("stop-color", "#3388bd")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "20%")
+            .attr("stop-color", "#66c2a5")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "30%")
+            .attr("stop-color", "#66c2a5")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "30%")
+            .attr("stop-color", "#abdda4")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "40%")
+            .attr("stop-color", "#abdda4")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "40%")
+            .attr("stop-color", "#e6f598")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", "#e6f598")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", "#fee08b")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "60%")
+            .attr("stop-color", "#fee08b")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "60%")
+            .attr("stop-color", "#fdae61")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "70%")
+            .attr("stop-color", "#fdae61")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "70%")
+            .attr("stop-color", "#f46d43")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "80%")
+            .attr("stop-color", "#f46d43")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "80%")
+            .attr("stop-color", "#d53e4f")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "90%")
+            .attr("stop-color", "#d53e4f")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "90%")
+            .attr("stop-color", "#9e0142")
+            .attr("stop-opacity", 1);
+        gradient.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#9e0142")
+            .attr("stop-opacity", 1);
+        const diameter = 300;
+        const margin = 4;
+        var svgs = {};
+        var views = {};
         
+        function makeSVG(svgId, attribute) {
+            var div = d3.select("body").append("div").attr("style", "display:inline-block;min-height: "+diameter+", min-width:"+diameter);
+            div.append("h2").text(attribute);
+            var svg = div.append("svg").attr("width", diameter).attr("height", diameter).attr("id", "container-" + svgId).attr("class", "viz"),
+                g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
+            var pack = d3.pack()
+                .size([diameter - margin, diameter - margin])
+                .padding(2);
 
-var focus = root,
-      nodes = pack(root).descendants(),
-      view;
+            svgs[svgId] = {};
 
-  var circle = g.selectAll("circle")
-    .data(nodes)
-    .enter().append("circle")
-      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-        .style("fill", function (d,i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : color(-1); })
-      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+            d3.tsv("nba-no-hierarchy.txt", function (error, root) {
+                if (error) throw error;
 
-  var text = g.selectAll("text")
-    .data(nodes)
-    .enter().append("text")
-      .attr("class", "label")
-      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-      .text(function(d) { return d.data.id; });
+                root = d3.stratify()
+                    .id(function (d) { return d.Player + "-" + svgId; })
+                    .parentId(function (d) { return d.Team ? d.Team + "-" + svgId : undefined; })
+                    (root);
+                
+                var values = [];
+                root = d3.hierarchy(root)
+                    .sum(function (d) { 
+                        if (d.data[attribute] !== undefined)
+                            values.push(d.data[attribute]);
+                        return d.data.Points; })
+                    .sort(function (a, b) { return b.value - a.value; });
 
-  var node = g.selectAll("circle,text");
+                svgs[svgId] = { focus: root, nodes: pack(root).descendants(), values: values};
+                var color = makeQuantileScale(svgs[svgId].values);
+                svgs[svgId].circle = g.selectAll("circle")
+                    .data(svgs[svgId].nodes)
+                    .enter().append("circle")
+                    .attr("id", function (d) { return d.data.id.replace(/\s/g, "") + "-" + svgId; })
+                    .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+                    .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#efefef"; })
+                    .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); });
 
-  svg
-      .style("background", "white")
-      .on("click", function() { zoom(root); });
+                var text = g.selectAll("text")
+                    .data(svgs[svgId].nodes)
+                    .enter().append("text")
+                    .attr("class", "label")
+                    .style("fill-opacity", function (d) { return d.parent === root ? 1 : 0; })
+                    .style("display", function (d) { return d.parent === root ? "inline" : "none"; })
+                    .text(function (d) { return d.data.data.Player; });
 
-  zoomTo([root.x, root.y, root.r * 2 + margin]);
+                svgs[svgId].node = g.selectAll("circle,text");
 
-  function zoom(d) {
-    var focus0 = focus; focus = d;
+                svg
+                    .style("background", "white")
+                    .on("click", function () { zoomAll(root); });
 
-    var transition = d3.transition()
-        .duration(d3.event.altKey ? 7500 : 750)
-        .tween("zoom", function(d) {
-          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-          return function(t) { zoomTo(i(t)); };
-        });
+                zoomTo([root.x, root.y, root.r * 2 + margin], svgId);
+            });
+        }
 
-    transition.selectAll("text")
-      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-        .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
-  }
+        function zoomAll(d) {
+            var normalizedId = d.data.id.split("-")[0].replace(/\s/g, "");
+            d3.selectAll("[id^=" + normalizedId + "]").each(function (d, i) { zoom(d, this); });
+        }
 
-  function zoomTo(v) {
-    var k = diameter / v[2]; view = v;
-    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-    circle.attr("r", function(d) { return d.r * k; });
-  }
-});
-    }
+        function zoom(d, elem) {
+            var svgId = d.data.id.split("-")[1];
+            var focus0 = svgs[svgId].focus; svgs[svgId].focus = d;
 
+            var transition = d3.select(elem).transition()
+                .duration(d3.event.altKey ? 7500 : 750)
+                .tween(d.data.id, function (d) {
+                    var i = d3.interpolateZoom(views[svgId], [svgs[svgId].focus.x, svgs[svgId].focus.y, svgs[svgId].focus.r * 2 + margin]);
+                    return function(t) { zoomTo(i(t), svgId);};
+                });
 
+            d3.transition().selectAll("#container-"+svgId+" text")
+                .filter(function (d) { return d.parent === svgs[svgId].focus || this.style.display === "inline"; })
+                .style("fill-opacity", function (d) { return d.parent === svgs[svgId].focus ? 1 : 0; })
+                .on("start", function (d) { if (d.parent === svgs[svgId].focus) this.style.display = "inline"; })
+                .on("end", function (d) { if (d.parent !== svgs[svgId].focus) this.style.display = "none"; });
+        }
 
-var colorTop = d3.scaleLinear()
-    .domain([-1, 0,1600,1890,1891])
-    .range(["lightgrey","black","black", "lightgrey", "white"])
-    .interpolate(d3.interpolateHcl);
-var color = d3.scaleLinear()
-    .domain([-1, 0,50,80])
-    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
-    .interpolate(d3.interpolateHcl);
-var colorun = d3.scaleLinear()
-    .domain([-1, 0,60,80])
-    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
-    .interpolate(d3.interpolateHcl);
-var colordeux = d3.scaleLinear()
-    .domain([-1, 0,2,8])
-    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
-    .interpolate(d3.interpolateHcl);
-var colortrois = d3.scaleLinear()
-    .domain([-1, 0,2000,3500])
-    .range(["lightgrey","black", "rgb(20,20,20)", "white"])
-    .interpolate(d3.interpolateHcl);
-    
-        makeSVG("premier", "Games Started",color);
-        makeSVG("zero", "Points",colorTop);
-        makeSVG("deuxieme", "Games Played", colorun);
-        makeSVG("troisieme", "Minutes", colortrois);
-        makeSVG("quatrieme", "Total Rebounds/Game", colordeux);
+        function zoomTo(v, svgId) {
+            var k = diameter / v[2]; views[svgId] = v;
+            svgs[svgId].node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+            svgs[svgId].circle.attr("r", function (d) { return d.r * k; });
+        }
+
+        function makeQuantileScale(values) {
+            return d3.scaleQuantile()
+                .domain(values)
+                .range(["#5e4fa2","#3288bd","#66c2a5","#abdda4","#e6f598","#ffffbf","#fee08b","#fdae61","#f46d43","#d53e4f","#9e0142"])
+        }
+
+        makeSVG("points", "Points");
+        makeSVG("games_started", "Games Started");
+        makeSVG("games_played", "Games Played");
+        makeSVG("minutes", "Minutes");
+        makeSVG("total_rebounds_per_game", "Total Rebounds/Game");
     </script>
 </body>
+
 </html>
