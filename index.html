@@ -39,7 +39,7 @@ circle.hovered{
     }
 
 .ghost {
-    opacity: 0.1;
+    opacity: 0.01;
 }
 
 .hidden-labels {
@@ -226,7 +226,7 @@ circle.hovered{
                     .enter().append("circle")
                     .attr("id", function (d) { return d.data.id.replace(/[\s\']/g, "") })
                     .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-                    .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#efefef"; })
+                    .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#fafafa"; })
                     .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); })
                     .on("mouseover", function(d) { 
                         currentlyHovered = d.data.id.split("-")[0].replace(/[\s\']/g, "");
@@ -297,14 +297,15 @@ circle.hovered{
         makeSVG("total_rebounds_per_game", "Total Rebounds/Game");
 
         function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
-            var top = svgs[svgId].nodes
+            svgs[svgId].nodes
                 .filter(function(d) { return d.value < limit && d.depth === 4; }) // Hide all the circles below the limit
                 .forEach(function(d,index) {
-                    console.log(d);
                     var commonPartOfId = d.data.id.replace(/[\s\']/g, "").split('-')[0]; // Keep only the common part of their id between svgs
-                    console.log(commonPartOfId);
-                    d3.selectAll(".node--leaf[id^="+commonPartOfId+"]").classed("ghost", true);
-                });
+                    d3.selectAll(".node--leaf[id^="+commonPartOfId+"-]")
+                    .filter(function(dd) { return d.parent.value === dd.parent.value}) // eviter de cacher d'autres joueurs du même nom
+                    .classed("ghost", true);
+                    console.log(d);
+            });
         }
 
         function unghostAll() {
