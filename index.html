@@ -37,14 +37,21 @@ circle.hovered{
   stroke: black;
   stroke-width: 1.5px;
     }
+
+.ghost {
+    opacity: 0.1;
+}
 </style>
 </head>
 
 <body>
     <header><h1>NBA</h1>
     <div class="scale">
-        <svg id="legend-svg"></svg></header>
+        <svg id="legend-svg"></svg>
         <p>Les valeurs sont colorées selon leur quantile. Le rayon des cercles correspond au nombre de points du joueur.</p>
+        <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
+        <button onclick="unghostAll()">Réinitialiser</button>
+        </header>
     </div>
     <script>
         /* BEGIN Scale */
@@ -171,6 +178,7 @@ circle.hovered{
         var svgs = {};
         var views = {};
         var currentlyHovered;
+        var tenBestScores;
         /* Make a new graph based on one attribute */
         function makeSVG(svgId, attribute) {
             var div = d3.select("body").append("div").attr("style", "display:inline-block;min-height: "+diameter+", min-width:"+diameter);
@@ -200,21 +208,26 @@ circle.hovered{
                         return d.data.Points; })
                     .sort(function (a, b) { return b.value - a.value; });
 
+                // Ten best scores
+                if(attribute === "Points") {
+                    tenBestScores = values.sort(function(a,b) {return b-a;}).slice(0,10);
+                };
+
                 svgs[svgId] = { focus: root, nodes: pack(root).descendants(), values: values};
                 var color = makeQuantileScale(svgs[svgId].values);
                 svgs[svgId].circle = g.selectAll("circle")
                     .data(svgs[svgId].nodes)
                     .enter().append("circle")
-                    .attr("id", function (d) { return d.data.id.replace(/\s/g, "") })
+                    .attr("id", function (d) { return d.data.id.replace(/[\s\']/g, "") })
                     .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
                     .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#efefef"; })
                     .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); })
                     .on("mouseover", function(d) { 
-                        currentlyHovered = d.data.id.split("-")[0].replace(/\s/g, "");
+                        currentlyHovered = d.data.id.split("-")[0].replace(/[\s\']/g, "");
                         d3.selectAll("circle[id^="+currentlyHovered+"]").classed("hovered", true);
                      })
                     .on("mouseout", function(d) { 
-                        if(currentlyHovered) d3.selectAll("circle[id^="+currentlyHovered+"]").classed("hovered", false);
+                        d3.selectAll(".hovered").classed("hovered", false);
                      });
 
                 var text = g.selectAll("text")
@@ -236,7 +249,7 @@ circle.hovered{
         }
 
         function zoomAll(d) {
-            var normalizedId = d.data.id.split("-")[0].replace(/\s/g, "");
+            var normalizedId = d.data.id.split("-")[0].replace(/[\s\']/g, "");
             d3.selectAll("[id^=" + normalizedId + "]").each(function (d, i) { zoom(d, this); });
         }
 
@@ -270,11 +283,27 @@ circle.hovered{
                 .range(["#5e4fa2","#3288bd","#66c2a5","#abdda4","#e6f598","#ffffbf","#fee08b","#fdae61","#f46d43","#d53e4f","#9e0142"])
         }
 
+        // Always keep at least Points
         makeSVG("points", "Points");
         makeSVG("games_started", "Games Started");
         makeSVG("games_played", "Games Played");
         makeSVG("minutes", "Minutes");
         makeSVG("total_rebounds_per_game", "Total Rebounds/Game");
+
+        function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
+            var top = svgs[svgId].nodes
+                .filter(function(d) { return d.value < limit && d.depth === 4; }) // Hide all the circles below the limit
+                .forEach(function(d,index) {
+                    console.log(d);
+                    var commonPartOfId = d.data.id.replace(/[\s\']/g, "").split('-')[0]; // Keep only the common part of their id between svgs
+                    console.log(commonPartOfId);
+                    d3.selectAll(".node--leaf[id^="+commonPartOfId+"]").classed("ghost", true);
+                });
+        }
+
+        function unghostAll() {
+            d3.selectAll(".ghost").classed("ghost", false);
+        }
     </script>
 </body>
 
