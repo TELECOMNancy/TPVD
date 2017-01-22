@@ -30,7 +30,7 @@
 <header><h1>NBA</h1>
     <div class="scale">
         <p>Les valeurs sont colorées selon leur quantile.</p>
-        <button onclick="ghostLow(1892)">Mettre en évidence les 10 meilleurs</button>
+        <button onclick="ghostLow()">Mettre en évidence les 10 meilleurs</button>
         <button onclick="unghostAll()">Réinitialiser</button>
         <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
             <option value="Points" selected>Points</option>
@@ -105,11 +105,10 @@
                 .text(function (d) { return d.data.id; });
         });
 
-    function ghostLow(limit) { // 1892 is the limit to use to highlight 10 best points
+    function ghostLow() { // 1892 is the limit to use to highlight 10 best points
         svg.nodes
             .filter(function (d) { console.log(d);return d.data.data.Points < 1892 && d.depth === 4; }) // Hide all the circles below the tenth score
             .forEach(function(d,i) {
-                console.log(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id));
                 d3.selectAll(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id))
                     .classed("ghost", true);
             }
