@@ -183,7 +183,6 @@ circle.hovered{
         var svgs = {};
         var views = {};
         var currentlyHovered;
-        var tenBestScores;
         var showLabel = true;
         /* Make a new graph based on one attribute */
         function makeSVG(svgId, attribute) {
@@ -213,11 +212,6 @@ circle.hovered{
                             values.push(d.data[attribute]);
                         return d.data.Points; })
                     .sort(function (a, b) { return b.value - a.value; });
-
-                // Ten best scores
-                if(attribute === "Points") {
-                    tenBestScores = values.sort(function(a,b) {return b-a;}).slice(0,10);
-                };
 
                 svgs[svgId] = { focus: root, nodes: pack(root).descendants(), values: values};
                 var color = makeQuantileScale(svgs[svgId].values);
@@ -291,10 +285,16 @@ circle.hovered{
 
         // Always keep at least Points
         makeSVG("points", "Points");
-        makeSVG("games_started", "Games Started");
         makeSVG("games_played", "Games Played");
-        makeSVG("minutes", "Minutes");
+        makeSVG("games_started", "Games Started");
+        makeSVG("minutes_per_game", "Minutes/Game");
         makeSVG("total_rebounds_per_game", "Total Rebounds/Game");
+        makeSVG("offensive_rebounds_per_game", "Offensive Rebounds/Game");
+        makeSVG("defensive_rebounds_per_game", "Defensive Rebounds/Game");
+        makeSVG("steals_per_game", "Steals/Game");
+        makeSVG("blocks_per_game", "Blocks/Game");
+        makeSVG("personal_fouls_per_game", "Personal Fouls/Game");
+        makeSVG("technical_fouls", "Technical Fouls");
 
         function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
             svgs[svgId].nodes
