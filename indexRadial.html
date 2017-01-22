@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node circle {
+  fill: #999;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-opacity: 0.4;
+  stroke-width: 1.5px;
+}
+
+.ghost {
+    opacity: 0.1;
+}
+
+</style>
+
+<header><h1>NBA</h1>
+    <div class="scale">
+        <p>Les valeurs sont colorées selon leur quantile.</p>
+        <button onclick="ghostLow(1892)">Mettre en évidence les 10 meilleurs</button>
+        <button onclick="unghostAll()">Réinitialiser</button>
+        <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
+            <option value="Points" selected>Points</option>
+            <option value="Steals">Steals</option>
+            <option value="Minutes">Minutes</option>
+            <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+            <option value="Technical Fouls">Technical Fouls</option>
+        </select>
+        </header>
+<svg width="960" height="960"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+    var svg = {};
+    var pointsValues = {};
+
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            g = svg.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+        var tree = d3.tree()
+            .size([360, 400])
+            .separation(function (a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+        d3.tsv("nba-no-hierarchy.txt", function (error, root) {
+            if (error) throw error;
+
+            root = d3.stratify()
+                .id(function (d) { return d.Player; })
+                .parentId(function (d) { return d.Team; })
+                (root);
+            var values = [];
+            root = d3.hierarchy(root)
+                .sum(function (d) {
+                    if (d.data.Points !== undefined)
+                        values.push(d.data.Points);
+                    return d.data.Points;
+                })
+                .sort(function (a, b) { return b.value - a.value; });
+            var color = makeQuantileScale(values);
+            root = tree(root);
+
+            svg = {values : values, nodes: root.descendants()};
+            pointsValues = values;
+
+            var link = g.selectAll(".link")
+                .data(root.descendants().slice(1))
+                .enter().append("path")
+                .attr("class", function (d) { return "link " + escapeString(d.parent.data.id) + "-" + escapeString(d.data.id) })
+                .attr("d", function (d) {
+                    return "M" + project(d.x, d.y)
+                        + "C" + project(d.x, (d.y + d.parent.y) / 2)
+                        + " " + project(d.parent.x, (d.y + d.parent.y) / 2)
+                        + " " + project(d.parent.x, d.parent.y);
+                });
+
+            var node = g.selectAll(".node")
+                .data(root.descendants())
+                .enter().append("g")
+                .attr("class", function (d) { return escapeString(d.data.id) + " node" + (d.children ? " node--internal" : " node--leaf parent-" + escapeString(d.parent.data.id)); })
+                .attr("transform", function (d) { return "translate(" + project(d.x, d.y) + ")"; });
+
+            node.append("circle")
+                .attr("r", 2.5)
+                .style("fill", function (d) { return d.children ? undefined : color(d.value); });
+
+            node.append("text")
+                .attr("dy", ".31em")
+                .attr("x", function (d) { return d.x < 180 === !d.children ? 6 : -6; })
+                .style("text-anchor", function (d) { return d.x < 180 === !d.children ? "start" : "end"; })
+                .attr("transform", function (d) { return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; })
+                .text(function (d) { return d.data.id; });
+        });
+
+    function ghostLow(limit) { // 1892 is the limit to use to highlight 10 best points
+        svg.nodes
+            .filter(function (d) { console.log(d);return d.data.data.Points < 1892 && d.depth === 4; }) // Hide all the circles below the tenth score
+            .forEach(function(d,i) {
+                console.log(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id));
+                d3.selectAll(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id))
+                    .classed("ghost", true);
+            }
+        );
+    }
+
+    function unghostAll() {
+        d3.selectAll(".ghost").classed("ghost", false);
+    }
+
+    function makeQuantileScale(values) {
+        return d3.scaleQuantile()
+            .domain(values)
+            .range(["#5e4fa2", "#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"])
+    }
+
+    function project(x, y) {
+        var angle = (x - 90) / 180 * Math.PI, radius = y;
+        return [radius * Math.cos(angle), radius * Math.sin(angle)];
+    }
+
+    function escapeString(str) {
+        return str.replace(/[^a-zA-Z]/g, '_')
+    }
+
+    function changeAttribute(selector) {
+        var attribute = selector.value;
+        svg.values = [];
+        svg.nodes.forEach(function(d,i) {
+            svg.values.push(d.data.data[attribute]);
+            d.value = d.data.data[attribute];
+        })
+        var quantile = makeQuantileScale(svg.values);
+        svg.nodes.filter(function(d) { return !d.children; }).forEach(function(d,i) {
+            d3.select(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id) + " > circle")
+                .attr("style", null)
+                .style("fill", quantile(d.value));
+        });
+           // .attr("fill", function(d) { quantile(d.value)});
+    }
+</script>
