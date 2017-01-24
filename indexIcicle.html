@@ -84,7 +84,7 @@ text{
                     partition(root);
                     svgArray = {nodes: root.descendants(), values: vals};
                     maxValue = vals.sort(function(a,b){return b-a;})[0];
-                    console.log(maxValue);
+
                     var cell = svg
                         .selectAll(".node")
                         .data(root.descendants())

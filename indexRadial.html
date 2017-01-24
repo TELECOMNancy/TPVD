@@ -40,19 +40,19 @@
             <option value="Technical Fouls">Technical Fouls</option>
         </select>
         </header>
-<svg width="960" height="960"></svg>
+<svg width="1600" height="1600"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
     var svg = {};
     var pointsValues = {};
-
+    var maxValue;
         var svg = d3.select("svg"),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             g = svg.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
         var tree = d3.tree()
-            .size([360, 400])
+            .size([360, 680])
             .separation(function (a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
         d3.tsv("nba-no-hierarchy.txt", function (error, root) {
@@ -75,6 +75,8 @@
 
             svg = {values : values, nodes: root.descendants()};
             pointsValues = values;
+            
+            maxValue = pointsValues.sort(function(a,b){return b-a;})[0];
 
             var link = g.selectAll(".link")
                 .data(root.descendants().slice(1))
@@ -94,7 +96,7 @@
                 .attr("transform", function (d) { return "translate(" + project(d.x, d.y) + ")"; });
 
             node.append("circle")
-                .attr("r", 2.5)
+                .attr("r", function(d) { return d.children ? 3 : 8*(d.value/maxValue); })
                 .style("fill", function (d) { return d.children ? undefined : color(d.value); });
 
             node.append("text")
@@ -141,9 +143,12 @@
             svg.values.push(d.data.data[attribute]);
             d.value = d.data.data[attribute];
         })
+        maxValue = svg.values.sort(function(a,b){return b-a;})[0];
+
         var quantile = makeQuantileScale(svg.values);
         svg.nodes.filter(function(d) { return !d.children; }).forEach(function(d,i) {
             d3.select(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id) + " > circle")
+                .attr("r", function(d) { return d.children ? 3 : 8*(d.value/maxValue); })
                 .attr("style", null)
                 .style("fill", quantile(d.value));
         });
