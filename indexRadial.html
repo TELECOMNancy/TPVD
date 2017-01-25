@@ -46,10 +46,10 @@
     var svg = {};
     var pointsValues = {};
     var maxValue;
-        var svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height"),
-            g = svg.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+        var svgElem = d3.select("svg"),
+            width = +svgElem.attr("width"),
+            height = +svgElem.attr("height"),
+            g = svgElem.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
         var tree = d3.tree()
             .size([360, 680])
