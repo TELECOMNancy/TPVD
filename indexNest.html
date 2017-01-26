@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Radial avec hiérarchies par rapport à la médiane des attributs</title>
+    <style>
+
+
+.node circle {
+  fill: #999;
+}
+
+.node--internal[class^="low"] circle {
+  fill: indigo;
+}
+
+.link.low {
+    stroke: indigo;
+}
+.node--internal[class^="top"] circle {
+  fill: orangered;
+}
+
+.link.top {
+    stroke: orangered;
+}
+.node text {
+  font: 10px sans-serif;
+}
+
+.node--leaf text {
+    font-size: 7px;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-opacity: 0.4;
+  stroke-width: 1.5px;
+}
+
+.ghost {
+    opacity: 0.1;
+}
+
+</style>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+    <header><h1>Radial avec hiérarchies par rapport à la médiane des attributs</h1>
+    <div class="scale">
+        <p>Les joueurs sont colorés selon le quantile de leur score.</p>
+    </header>
+<svg width="1000" height="1000"></svg>
+
+<script>
+    var svg = {};
+    var pointsValues = [];
+    var maxValue;
+        var svgElem = d3.select("svg"),
+            width = +svgElem.attr("width"),
+            height = +svgElem.attr("height"),
+            g = svgElem.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+        var tree = d3.tree()
+            .size([360, 480])
+            .separation(function (a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+
+    d3.tsv("nba-no-hierarchy-original.txt", function (error, data) {
+        if (error) throw error;
+
+        var minutesGameMedian = d3.median(data.map(function(d) { return d["Minutes/Game"]; }));
+        var gamesPlayedMedian = d3.median(data.map(function(d) { return d["Games Played"]; }))
+        var turnoversGameMedian = d3.median(data.map(function(d) { return d["Turnovers/Game"]; }))
+        var totalReboundsGameMedian = d3.median(data.map(function(d) { return d["Total Rebounds/Game"]; }))
+        var technicalFoulsMean = d3.median(data.map(function(d) { return d["Technical Fouls"]; }))
+        var assistsGameMedian = d3.median(data.map(function(d) { return d["Assists/Game"]; }))
+        var fieldGoalsMadeGameMedian = d3.median(data.map(function(d) { return d["Field Goals Made/Game"]; }))
+        var twoPointMedian = d3.median(data.map(function(d) { return d["2 Points Made/Game"]; }))
+
+        data = d3.nest()
+            .key(function (d) { return d["Games Played"] < gamesPlayedMedian ? "lowGames" : "topGames"; })
+            .key(function (d) { return d["Minutes/Game"] < minutesGameMedian ? "lowMinute" : "topMinute"; })
+            .key(function (d) { return d["Turnovers/Game"] < turnoversGameMedian ? "lowTurnovers" : "topTurnovers"; })
+            .key(function (d) { return d["2 Points Made/Game"] < twoPointMedian ? "low2Pt" : "top2Pt"; })
+            .key(function (d) { return d["Assists/Game"] < assistsGameMedian ? "lowAssists" : "topAssists"; })
+            .key(function (d) { return d["Field Goals Made/Game"] < fieldGoalsMadeGameMedian ? "lowFGA/Game" : "topFGA/Game"; })
+            .key(function (d) { return d["Total Rebounds/Game"] < totalReboundsGameMedian ? "lowRebounds" : "topRebounds"; })
+            .entries(data);
+        data = { key: "nba", values: data };
+
+        pointsValues = [];
+        var root = d3.hierarchy(data, function (d) {
+            return d.values;
+        })
+            .sum(function (d) { if (d.Points) pointsValues.push(parseInt(d.Points)); return d.Points; })
+            .sort(function (a, b) { return b.value - a.value; });
+
+        quantile = makeQuantileScale(pointsValues);
+
+        root = tree(root);
+
+            svg = {values : pointsValues, nodes: root.descendants()};
+            var sortedValues = pointsValues.sort(function(a,b){return b-a;}).slice(0,10);
+            maxValue = sortedValues[0];
+
+            var link = g.selectAll(".link")
+                .data(root.descendants().slice(1))
+                .enter().append("path")
+                .attr("class", function (d) { return "link " + escapeString(d.parent.data.key) + "-" + escapeString(d.data.key || d.data.Player) + (d.data.key ? " " + d.data.key.slice(0,3) : "")})
+                .attr("d", function (d) {
+                    return "M" + project(d.x, d.y)
+                        + "C" + project(d.x, (d.y + d.parent.y) / 2)
+                        + " " + project(d.parent.x, (d.y + d.parent.y) / 2)
+                        + " " + project(d.parent.x, d.parent.y);
+                });
+
+            var node = g.selectAll(".node")
+                .data(root.descendants())
+                .enter().append("g")
+                .attr("class", function (d) { return escapeString(d.data.key || d.data.Player) + " node" + (d.children ? " node--internal" : " node--leaf parent-" + escapeString(d.parent.data.key)); })
+                .attr("transform", function (d) { return "translate(" + project(d.x, d.y) + ")"; });
+
+            node.append("circle")
+                .attr("r", function(d) { return 3; })
+                .style("fill", function (d) { return d.children ? undefined : quantile(d.value); });
+
+            node.append("text")
+                .attr("dy", ".31em")
+                .attr("x", function (d) { return d.x < 180 === !d.children ? 6 : -6; })
+                .style("text-anchor", function (d) { return d.x < 180 === !d.children ? "start" : "end"; })
+                .attr("transform", function (d) { return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; })
+                .text(function (d) { 
+                    var label = '';
+                    var idx;
+                    if(d.data.key) {
+                        label = d.data.key.slice(3,d.data.key.length);
+                    } else if (idx = sortedValues.indexOf(d.value)+1){
+                        label = idx;
+                    }
+                    return label 
+                });
+
+            node.append("title")
+                    .filter(function(d) { return !d.children; })
+                    .text(function (d) { return (d.data.Player + "\n" + d.value + " points"); });
+        });
+
+    /////////////////////////////////////////
+
+
+    function project(x, y) {
+        var angle = (x - 90) / 180 * Math.PI, radius = y;
+        return [radius * Math.cos(angle), radius * Math.sin(angle)];
+    }
+
+    function makeQuantileScale(values) {
+        return d3.scaleQuantile()
+            .domain(values)
+            .range(["#5e4fa2", "#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"])
+    }
+
+    function escapeString(str) {
+        return str.replace(/[^a-zA-Z]/g, '_');
+    }
+        </script>
+</body>
+
+</html>

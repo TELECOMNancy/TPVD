@@ -65,7 +65,7 @@ svg {
         var values= {};
 
         var margin = { top: 30, right: 10, bottom: 10, left: 10 },
-            width = 2300 - margin.left - margin.right,
+            width = 3000 - margin.left - margin.right,
             height = 700 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal().rangePoints([0, width], 1),
@@ -82,7 +82,7 @@ svg {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.csv("nba-no-hierarchy-exo2.csv", function (error, players) {
+        d3.tsv("nba-no-hierarchy-original.txt", function (error, players) {
 
             // Extract the list of dimensions and create a scale for each.
             x.domain(dimensions = d3.keys(players[0]).filter(function (d) {
@@ -94,7 +94,7 @@ svg {
                         .domain(players.map(function (p) { return p[d]; }))
                         .rangePoints([height, 0]);
                 }
-                else if (d === "Assists/Turnovers Ratio" || d === "Technical Fouls/Game" || d === "3 Point Percentage" || d === "Steals/Game"){
+                else if (false && (d === "Assists/Turnovers Ratio" || d === "Technical Fouls/Game" || d === "3 Point Percentage" || d === "Steals/Game")){
                     y[d] = d3.scale.linear()
                         .domain(d3.extent(players, function (p) { return +p[d]; }))
                         .range([0, height]);
