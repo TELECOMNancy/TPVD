@@ -179,7 +179,7 @@ nav ul li a {
         svgData.circle = g.selectAll("circle")
             .data(svgData.nodes)
             .enter().append("circle")
-            .attr("class", function (d) { return d.parent ? d.children ? "node "+d.data.key : "node node--leaf" : "node node--root"; })
+            .attr("class", function (d) { return d.parent ? d.children ? "node "+d.data.key : "node node--leaf "+escapeString(d.data.Player) : "node node--root"; })
             .style("fill", function (d, i) { return !d.children ? color(parseInt(d.data["Points"])) : "#fafafa"; })
             .on("click", function (d) { if (svgData.focus !== d) zoom(d), d3.event.stopPropagation(); })
             .on("mouseover", function(d) { 
@@ -271,10 +271,9 @@ nav ul li a {
 
     function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
         svgData.nodes
-            .filter(function (d) { return d.value < limit && d.depth === 4; }) // Hide all the circles below the limit
+            .filter(function (d) { return d.value < limit && !d.children; }) // Hide all the circles below the limit
             .forEach(function (d, index) {
-            var commonPartOfId = escapeString(d.data.id).split('-')[0]; // Keep only the common part of their id between svgs
-                d3.selectAll(".node--leaf[id^=" + commonPartOfId + "-]")
+                d3.selectAll(".node--leaf." + escapeString(d.data.Player))
                     .filter(function (dd) { return d.parent.value === dd.parent.value }) // eviter de cacher d'autres joueurs du même nom
                     .classed("ghost", true);
             });
