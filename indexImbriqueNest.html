@@ -35,10 +35,8 @@ h2 {
 }
 
 circle.hovered{
-    
-  stroke: black;
-  stroke-width: 1.5px;
-    }
+    stroke-width: 1.5px;
+}
 
 .ghost {
     opacity: 0.01;
@@ -48,23 +46,23 @@ circle.hovered{
     display: none !important;
 }
 
-/*.node[class*="top"] {
+.hovered.node[class*="top_"] {
      stroke: orangered; 
 }
 
-.node[class*="med"] {
-      stroke: yellow;
+.hovered.node[class*="med_"] {
+      stroke: gold;
 }
-.node[class*="topmed"] {
+.hovered.node[class*="topmed_"] {
       stroke: orange;
 }
-.node[class*="low"] {
+.hovered.node[class*="low_"] {
       stroke: cornflowerblue;
 }
-.node[class*="lowmed"] {
+.hovered.node[class*="lowmed_"] {
    stroke: lightblue;
    
-}*/
+}
 
 nav ul {
     list-style: none;
@@ -167,6 +165,16 @@ nav ul li a {
             .attr("class", function (d) { return d.parent ? d.children ? "node "+d.data.key : "node node--leaf" : "node node--root"; })
             .style("fill", function (d, i) { return !d.children ? color(parseInt(d.data["Points"])) : "#fafafa"; })
             .on("click", function (d) { if (svgData.focus !== d) zoom(d), d3.event.stopPropagation(); })
+            .on("mouseover", function(d) { 
+                currentlyHovered = d.data.key;
+                d3.selectAll("circle."+currentlyHovered).classed("hovered", true);
+            })
+            .on("mouseout", function(d) { 
+                d3.selectAll(".hovered").classed("hovered", false);
+            });
+
+        svgData.circle.append("title")
+            .text(function (d) { return d.data.key; });
 
         var text = g.selectAll("text")
             .data(svgData.nodes)
@@ -227,7 +235,7 @@ nav ul li a {
                 var attributedClass = undefined;
                 steps.forEach(function(step, idx) {
                     if(parseFloat(d[attribute]) <= step) {
-                        attributedClass = classes[idx]+escapeString(attribute);
+                        attributedClass = classes[idx]+"_"+escapeString(attribute);
                     }
                 });
                 return attributedClass;
