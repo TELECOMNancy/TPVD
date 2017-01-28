@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Coordonnées parallèles</title>
 <style>
 
 svg {
@@ -35,69 +34,31 @@ svg {
   cursor: move;
 }
 
-
-nav ul {
-    list-style: none;
-    padding:0;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-nav ul li {
-    background: #ddd;
-    padding:3px 6px;
-    margin: 0 5px;
-    border-radius: 10px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    cursor: pointer;
-}
 </style>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
-            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
-            <li><a href="IndexIcicle.html">Glaçons</a></li>
-            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
-            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
-            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
-        </ul>
-    </nav>
-    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
-        <div class="scale">
-            <svg id="scale-svg"></svg>
-            <p>Les lignes sont colorées selon le quantile de l'attribut sélectionné.</p>
-            <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
-                <option value="Points" selected>Points</option>
-                <option value="Games Played">Games Played</option>
-                <option value="Minutes/Game">Minutes/Game</option>
-                <option value="Points/Game">Points/Game</option>
-                <option value="Free Throw Percentage">Free Throw Percentage</option>
-                <option value="Turnovers/Game">Turnovers/Game</option>
-                <option value="Personal Fouls/Game">Personal Fouls/Game</option>
-                <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
-                <option value="2 Point Percentage">2 Point Percentage</option>
-                <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
-                <option value="Points/Shot">Points/Shot</option>
-                <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
-                <option value="Total Rebounds/Game">Total Rebounds/Game</option>
-                <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
-                <option value="Field Goal Percentage">Field Goal Percentage/Game</option>
-                <option value="Steals/Game">Steals/Game</option>
-                <option value="Assists/Game">Assists/Game</option>
-                <option value="Blocks/Game">Blocks/Game</option>
-                <option value="3 Point Percentage">3 Point Percentage</option>
-                <option value="Technical Fouls/Game">Technical Fouls/Game</option>
-            </select>
-        </div>
-    </header>
-    <script src="https://d3js.org/d3.v4.min.js"></script> <!-- Necessaire pour l'echelle -->
-    <script src="makeScale.js"></script>
-    
+    <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
+            <option value="Points" selected>Points</option>
+            <option value="Points/Game">Points/Game</option>
+            <option value="Games Played">Games Played</option>
+            <option value="Minutes/Game">Minutes/Game</option>
+            <option value="Free Throw Percentage">Free Throw Percentage</option>
+            <option value="Turnovers/Game">Turnovers/Game</option>
+            <option value="Personal Fouls/Game">Personal Fouls/Game</option>
+            <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
+            <option value="2 Point Percentage">2 Point Percentage</option>
+            <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
+            <option value="Points/Shot">Points/Shot</option>
+            <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
+            <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+            <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
+            <option value="Field Goal Percentage">Field Goal Percentage/Game</option>
+            <option value="Steals/Game">Steals/Game</option>
+            <option value="Assists/Game">Assists/Game</option>
+            <option value="Blocks/Game">Blocks/Game</option>
+            <option value="3 Point Percentage">3 Point Percentage</option>
+            <option value="Technical Fouls/Game">Technical Fouls/Game</option>
+    </select>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
         var focusedAttr = "Points";
@@ -121,19 +82,19 @@ nav ul li a {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.tsv("nba-no-hierarchy-original.txt", function (error, players) {
+        d3.csv("nba-no-hierarchy-original(1).csv", function (error, players) {
 
             // Extract the list of dimensions and create a scale for each.
             x.domain(dimensions = d3.keys(players[0]).filter(function (d) {
                 values[d] = players.map(function(p) { return p[d]});
 
-                if (d === "Player" || d === "Team" || d === "Conference" || d === "Division") return false;
+                if (d === "Player" || d === "Team" || d === "Conference" || d === "Division"|| d === "Fields Goals Made/Game"|| d === "3 Points Made/Game"|| d === "Blocks"|| d === "2 Points Made/Game"|| d === "Defensive Rebounds" || d === "Throws attempted" ||d=== "Throws Made/Game "|| d==="Free Throws Attempted/Game"|| d==="Offensive Rebounds"|| d==="Assists/Game"|| d==="Free Throws Attempted"|| d==="3 Points Made" || d === " 3 Points Attempted"|| d==="Total Rebounds"|| d=="Free Throws Attempted/Game"|| d=="Steals"|| d=="Personal Fouls"|| d=="3 Point Percentage"|| d=="Offensive Rebounds/Game"||d== "3 Points Attempted/Game"|| d== "Blocks/Game"||d== "3 Points Attempted" ||d== " Assists"|| d=="2 Points Attempted"|| d=="2 Points Made" ||d =="Steals/Game") return false;
                 else if (false) {
                     y[d] = d3.scale.ordinal()
                         .domain(players.map(function (p) { return p[d]; }))
                         .rangePoints([height, 0]);
                 }
-                else if (false && (d === "Assists/Turnovers Ratio" || d === "Technical Fouls/Game" || d === "3 Point Percentage" || d === "Steals/Game")){
+                else if (false && (d === "Assists/Turnovers Ratio" || d === "Technical Fouls/Game" || d === "3 Point Percentage" || d === "Steals/Game"|| d === "Games/Started")){
                     y[d] = d3.scale.linear()
                         .domain(d3.extent(players, function (p) { return +p[d]; }))
                         .range([0, height]);
@@ -255,7 +216,7 @@ nav ul li a {
 
                 var quantile = makeQuantileScale(values[focusedAttr]);
 
-                d3.selectAll(".foreground path")
+                d3.selectAl (".foreground path")
                          .style("stroke", function(d) { return quantile(d[focusedAttr]); });
             }
     </script>
