@@ -15,11 +15,19 @@
   fill: indigo;
 }
 
+.node--internal[class^="low"] circle.hovered {
+    stroke: indigo;
+    stroke-width:10px;
+}
 .link.low {
     stroke: indigo;
 }
 .node--internal[class^="top"] circle {
-  fill: orangered;
+    fill: orangered;
+}
+.node--internal[class^="top"] circle.hovered {
+    stroke: orangered;
+    stroke-width:10px;
 }
 
 .link.top {
@@ -46,6 +54,20 @@
 
 .ghost {
     opacity: 0.1;
+}
+
+p.structure span:not(:first-child):before {
+    content: ' > ';
+}
+
+p.structure span {
+    color: #888888;
+}
+
+p.structure {
+    text-align: center;
+    background: lightgoldenrodyellow;
+    padding: 10px;
 }
 
 nav ul {
@@ -85,7 +107,11 @@ nav ul li a {
     <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
         <div class="scale">
             <svg id="scale-svg"></svg>
-            <p>Radial avec hiérarchies par rapport à la médiane des attributs, les couleurs des cercles des joueurs dépendent du quantile de leur nombre de points. Les couleurs des liens représentent si ils sont au dessus de la médiane (rouge) ou en dessous (bleu) pour l'attribut indiqué.</p>
+            <p>Radial avec hiérarchies par rapport à la médiane des attributs, les couleurs des cercles des joueurs dépendent du quantile de leur nombre de points. Les couleurs des liens représentent si ils sont au dessus de la médiane (rouge) ou en dessous (bleu) pour l'attribut indiqué. Il est possible de survoler un cercle pour voir l'attribut concerné et son emplacement dans les autres sous-groupes.</p>
+        </div>
+
+        <div>
+            <p class="structure">Ordre de l'imbrication : </p>
         </div>
     </header>
 
@@ -98,6 +124,7 @@ nav ul li a {
     var svg = {};
     var pointsValues = [];
     var maxValue;
+    var currentlyHovered;
         var svgElem = d3.select("svg.graph"),
             width = +svgElem.attr("width"),
             height = +svgElem.attr("height"),
@@ -111,25 +138,41 @@ nav ul li a {
     d3.tsv("nba-no-hierarchy-original.txt", function (error, data) {
         if (error) throw error;
 
-        var minutesGameMedian = d3.median(data.map(function(d) { return d["Minutes/Game"]; }));
-        var gamesPlayedMedian = d3.median(data.map(function(d) { return d["Games Played"]; }))
-        var turnoversGameMedian = d3.median(data.map(function(d) { return d["Turnovers/Game"]; }))
-        var totalReboundsGameMedian = d3.median(data.map(function(d) { return d["Total Rebounds/Game"]; }))
-        var technicalFoulsMean = d3.median(data.map(function(d) { return d["Technical Fouls"]; }))
-        var assistsGameMedian = d3.median(data.map(function(d) { return d["Assists/Game"]; }))
-        var fieldGoalsMadeGameMedian = d3.median(data.map(function(d) { return d["Field Goals Made/Game"]; }))
-        var twoPointMedian = d3.median(data.map(function(d) { return d["2 Points Made/Game"]; }))
-
-        data = d3.nest()
-            .key(function (d) { return d["Games Played"] < gamesPlayedMedian ? "lowGames" : "topGames"; })
-            .key(function (d) { return d["Minutes/Game"] < minutesGameMedian ? "lowMinute" : "topMinute"; })
-            .key(function (d) { return d["Turnovers/Game"] < turnoversGameMedian ? "lowTurnovers" : "topTurnovers"; })
-            .key(function (d) { return d["2 Points Made/Game"] < twoPointMedian ? "low2Pt" : "top2Pt"; })
-            .key(function (d) { return d["Assists/Game"] < assistsGameMedian ? "lowAssists" : "topAssists"; })
-            .key(function (d) { return d["Field Goals Made/Game"] < fieldGoalsMadeGameMedian ? "lowFGA/Game" : "topFGA/Game"; })
-            .key(function (d) { return d["Total Rebounds/Game"] < totalReboundsGameMedian ? "lowRebounds" : "topRebounds"; })
-            .entries(data);
+    
+        data = makeNest(data, [
+            {
+                attribute: "Games Played",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "Minutes/Game",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "Turnovers/Game",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "2 Points Made/Game",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "Assists/Game",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "Field Goals Made/Game",
+                classes: ["top", "low"]
+            },
+            {
+                attribute: "Total Rebounds/Game",
+                classes: ["top", "low"]
+            },
+            
+        ]);
+        
         data = { key: "nba", values: data };
+
 
         pointsValues = [];
         var root = d3.hierarchy(data, function (d) {
@@ -165,7 +208,14 @@ nav ul li a {
 
             node.append("circle")
                 .attr("r", function(d) { return 3; })
-                .style("fill", function (d) { return d.children ? undefined : quantile(d.value); });
+                .style("fill", function (d) { return d.children ? undefined : quantile(d.value); })
+                .on("mouseover", function(d) { 
+                    currentlyHovered = d.data.key;
+                    d3.selectAll(".node--internal."+currentlyHovered+" circle").classed("hovered", true);
+                })
+                .on("mouseout", function(d) { 
+                    d3.selectAll(".hovered").classed("hovered", false);
+                });
 
             node.append("text")
                 .attr("dy", ".31em")
@@ -175,21 +225,49 @@ nav ul li a {
                 .text(function (d) { 
                     var label = '';
                     var idx;
-                    if(d.data.key) {
-                        label = d.data.key.slice(3,d.data.key.length);
-                    } else if (idx = sortedValues.indexOf(d.value)+1){
+                    if (idx = sortedValues.indexOf(d.value)+1){
                         label = idx;
                     }
                     return label 
                 });
 
             node.append("title")
-                    .filter(function(d) { return !d.children; })
-                    .text(function (d) { return (d.data.Player + "\n" + d.value + " points"); });
+                .text(function (d) {
+                    if(d.data.key) return d.data.key.replace(/_/g, " ");
+                    else return (d.data.Player + "\n" + d.value + " points"); 
+                });
         });
 
     /////////////////////////////////////////
+    function makeNest(data, structure) {
+        var nest = d3.nest();
+        
+        structure.forEach(function(level, idx) {
+            var classes = level.classes;
+            var nbOfClass = classes.length;
+            var attribute = level.attribute;
 
+            var attributeData = data.map(function(d) { return parseFloat(d[attribute]); }).sort(function(a,b) { return a-b; });
+            var classSize = 1/nbOfClass;
+            var steps = [];
+            for(i = 0; i < nbOfClass; i++) {
+                steps.push(d3.quantile(attributeData, 1-i*classSize));
+            }
+
+            nest = nest.key(function (d) {
+                var attributedClass = undefined;
+                steps.forEach(function(step, idx) {
+                    if(parseFloat(d[attribute]) <= step) {
+                        attributedClass = classes[idx]+"_"+escapeString(attribute);
+                    }
+                });
+                return attributedClass;
+            });
+            d3.select("p.structure").append("span").text(attribute + " (" + nbOfClass + " groupes)");
+        })
+
+        return nest.entries(data);
+    }
 
     function project(x, y) {
         var angle = (x - 90) / 180 * Math.PI, radius = y;

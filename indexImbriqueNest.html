@@ -64,6 +64,20 @@ circle.hovered{
    
 }
 
+p.structure span:not(:first-child):before {
+    content: ' > ';
+}
+
+p.structure span {
+    color: #888888;
+}
+
+p.structure {
+    text-align: center;
+    background: lightgoldenrodyellow;
+    padding: 10px;
+}
+
 nav ul {
     list-style: none;
     padding:0;
@@ -99,10 +113,13 @@ nav ul li a {
     <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
         <div class="scale">
             <svg id="scale-svg"></svg>
-            <p>La couleur et le rayon des cercles varie selon l'attribut sélectionné. Les couleurs dépendent du quantile.</p>
+            <p>La couleur et le rayon des cercles varie selon l'attribut sélectionné. Les couleurs dépendent du quantile. Il est possible de survoler un cercle pour voir l'attribut concerné et son emplacement dans les autres sous-groupes.</p>
             <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
             <button onclick="unghostAll()">Réinitialiser</button>
             <button onclick="toggleLabels()">Toggle labels</button>
+        </div>
+        <div>
+            <p class="structure">Ordre de l'imbrication : </p>
         </div>
     </header>
 
@@ -174,7 +191,7 @@ nav ul li a {
             });
 
         svgData.circle.append("title")
-            .text(function (d) { return d.data.key; });
+            .text(function (d) { return d.data.key ? d.data.key.replace(/_/g, " ") : ''; });
 
         var text = g.selectAll("text")
             .data(svgData.nodes)
@@ -182,7 +199,7 @@ nav ul li a {
             .attr("class", "label")
             .style("fill-opacity", function (d) { return d.parent === root ? 1 : 0; })
             .style("display", function (d) { return d.parent === root ? "inline" : "none"; })
-            .text(function (d) { return d.data.key || d.data.Player; });
+            .text(function (d) { return d.data.key ? d.data.key.replace(/_/g, " ") : d.data.Player; });
 
         svgData.node = g.selectAll("circle,text");
 
@@ -240,6 +257,7 @@ nav ul li a {
                 });
                 return attributedClass;
             });
+            d3.select("p.structure").append("span").text(attribute + " (" + nbOfClass + " groupes)");
         })
 
         return nest.entries(data);
