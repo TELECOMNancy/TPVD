@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Radial avec hiérarchies par rapport à la médiane des attributs</title>
+    <title>Noeuds-liens radial selon la médiane des attributs</title>
     <style>
 
 
@@ -48,23 +48,57 @@
     opacity: 0.1;
 }
 
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
 </style>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
 </head>
 
 <body>
-    <header><h1>Radial avec hiérarchies par rapport à la médiane des attributs</h1>
-    <div class="scale">
-        <p>Les joueurs sont colorés selon le quantile de leur score.</p>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
+        <div class="scale">
+            <svg id="scale-svg"></svg>
+            <p>Radial avec hiérarchies par rapport à la médiane des attributs, les couleurs des cercles des joueurs dépendent du quantile de leur nombre de points. Les couleurs des liens représentent si ils sont au dessus de la médiane (rouge) ou en dessous (bleu) pour l'attribut indiqué.</p>
+        </div>
     </header>
-<svg width="1000" height="1000"></svg>
+
+    <script src="makeScale.js"></script>
+
+
+<svg class="graph" width="1000" height="1000"></svg>
 
 <script>
     var svg = {};
     var pointsValues = [];
     var maxValue;
-        var svgElem = d3.select("svg"),
+        var svgElem = d3.select("svg.graph"),
             width = +svgElem.attr("width"),
             height = +svgElem.attr("height"),
             g = svgElem.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>Noeuds-liens radial</title>
 <style>
 
 .node circle {
@@ -25,28 +26,60 @@
     opacity: 0.1;
 }
 
-</style>
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
 
-<header><h1>NBA</h1>
-    <div class="scale">
-        <p>Les valeurs sont colorées selon leur quantile.</p>
-        <button onclick="ghostLow()">Mettre en évidence les 10 meilleurs</button>
-        <button onclick="unghostAll()">Réinitialiser</button>
-        <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
-            <option value="Points" selected>Points</option>
-            <option value="Steals">Steals</option>
-            <option value="Minutes">Minutes</option>
-            <option value="Total Rebounds/Game">Total Rebounds/Game</option>
-            <option value="Technical Fouls">Technical Fouls</option>
-        </select>
-        </header>
-<svg width="1600" height="1600"></svg>
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
+        <div class="scale">
+            <svg id="scale-svg"></svg>
+            <p>Radial avec hiérarchies par rapport à : Conférence/Division/Equipe, la couleur et le rayon des cercles des joueurs dépendent du quantile de l'attribut sélectionné.</p>
+            <button onclick="ghostLow()">Mettre en évidence les 10 meilleurs</button>
+            <button onclick="unghostAll()">Réinitialiser</button>
+            <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
+                <option value="Points" selected>Points</option>
+                <option value="Steals">Steals</option>
+                <option value="Minutes">Minutes</option>
+                <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+                <option value="Technical Fouls">Technical Fouls</option>
+            </select>
+        </div>
+    </header>
+
+    <script src="makeScale.js"></script>
+
+<svg class="graph" width="1600" height="1600"></svg>
 <script>
     var svg = {};
     var pointsValues = {};
     var maxValue;
-        var svgElem = d3.select("svg"),
+        var svgElem = d3.select("svg.graph"),
             width = +svgElem.attr("width"),
             height = +svgElem.attr("height"),
             g = svgElem.append("g").attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
@@ -109,7 +142,7 @@
 
     function ghostLow() { // 1892 is the limit to use to highlight 10 best points
         svg.nodes
-            .filter(function (d) { console.log(d);return d.data.data.Points < 1892 && d.depth === 4; }) // Hide all the circles below the tenth score
+            .filter(function (d) { return d.data.data.Points < 1892 && d.depth === 4; }) // Hide all the circles below the tenth score
             .forEach(function(d,i) {
                 d3.selectAll(".parent-"+escapeString(d.parent.data.id)+"."+escapeString(d.data.id))
                     .classed("ghost", true);

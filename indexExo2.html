@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>Coordonnées parallèles</title>
 <style>
 
 svg {
@@ -34,31 +35,69 @@ svg {
   cursor: move;
 }
 
+
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
 </style>
 
 <body>
-    <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
-            <option value="Points" selected>Points</option>
-            <option value="Games Played">Games Played</option>
-            <option value="Minutes/Game">Minutes/Game</option>
-            <option value="Points/Game">Points/Game</option>
-            <option value="Free Throw Percentage">Free Throw Percentage</option>
-            <option value="Turnovers/Game">Turnovers/Game</option>
-            <option value="Personal Fouls/Game">Personal Fouls/Game</option>
-            <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
-            <option value="2 Point Percentage">2 Point Percentage</option>
-            <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
-            <option value="Points/Shot">Points/Shot</option>
-            <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
-            <option value="Total Rebounds/Game">Total Rebounds/Game</option>
-            <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
-            <option value="Field Goal Percentage">Field Goal Percentage/Game</option>
-            <option value="Steals/Game">Steals/Game</option>
-            <option value="Assists/Game">Assists/Game</option>
-            <option value="Blocks/Game">Blocks/Game</option>
-            <option value="3 Point Percentage">3 Point Percentage</option>
-            <option value="Technical Fouls/Game">Technical Fouls/Game</option>
-    </select>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
+        <div class="scale">
+            <svg id="scale-svg"></svg>
+            <p>Les lignes sont colorées selon le quantile de l'attribut sélectionné.</p>
+            <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
+                <option value="Points" selected>Points</option>
+                <option value="Games Played">Games Played</option>
+                <option value="Minutes/Game">Minutes/Game</option>
+                <option value="Points/Game">Points/Game</option>
+                <option value="Free Throw Percentage">Free Throw Percentage</option>
+                <option value="Turnovers/Game">Turnovers/Game</option>
+                <option value="Personal Fouls/Game">Personal Fouls/Game</option>
+                <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
+                <option value="2 Point Percentage">2 Point Percentage</option>
+                <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
+                <option value="Points/Shot">Points/Shot</option>
+                <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
+                <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+                <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
+                <option value="Field Goal Percentage">Field Goal Percentage/Game</option>
+                <option value="Steals/Game">Steals/Game</option>
+                <option value="Assists/Game">Assists/Game</option>
+                <option value="Blocks/Game">Blocks/Game</option>
+                <option value="3 Point Percentage">3 Point Percentage</option>
+                <option value="Technical Fouls/Game">Technical Fouls/Game</option>
+            </select>
+        </div>
+    </header>
+    <script src="https://d3js.org/d3.v4.min.js"></script> <!-- Necessaire pour l'echelle -->
+    <script src="makeScale.js"></script>
+    
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script>
         var focusedAttr = "Points";

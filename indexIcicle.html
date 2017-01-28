@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Partition - Icicle</title>
+    <title>Glaçons</title>
     <style>
 
 .node {
@@ -24,28 +24,60 @@ text{
     opacity: 0.01;
 }
 
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
 
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
 </style>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
 </head>
 
 <body>
-        <header><h1>NBA</h1>
-    <div class="scale">
-        <p>Les valeurs sont colorées selon leur quantile. La hauteur des rectangles correspond au nombre de points du joueur.</p>
-        <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
-        <button onclick="unghostAll()">Réinitialiser</button>
-        
-        <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
-            <option value="Points" selected>Points</option>
-            <option value="Steals">Steals</option>
-            <option value="Minutes">Minutes</option>
-            <option value="Total Rebounds/Game">Total Rebounds/Game</option>
-            <option value="Technical Fouls">Technical Fouls</option>
-        </select>
-        </header>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
+        <div class="scale">
+            <svg id="scale-svg"></svg>
+            <p>Les rectangles sont colorées selon le quantile de l'attribut sélectionné. La hauteur des rectangles correspond au nombre de points du joueur.</p>
+            <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
+            <button onclick="unghostAll()">Réinitialiser</button>
+            
+            <select name="attribute" id="attribute-selection" onchange="changeAttribute(this)">
+                <option value="Points" selected>Points</option>
+                <option value="Steals">Steals</option>
+                <option value="Minutes">Minutes</option>
+                <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+                <option value="Technical Fouls">Technical Fouls</option>
+            </select>
+        </div>
+    </header>
 
+    <script src="makeScale.js"></script>
+
+        
         <script>
             var svgArray = {};
             var pointsValues = [];

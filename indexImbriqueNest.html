@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>TP Visualisation</title>
+    <title>Cercles imbriqués selon les attributs</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <style>
 h2 {
@@ -65,139 +65,53 @@ circle.hovered{
    stroke: lightblue;
    
 }*/
+
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
 </style>
 </head>
 
 <body>
-    <header>
-        <h1>NBA</h1>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header><h1>TP - Bryan Colle et Ali Daoudi</h1>
         <div class="scale">
-            <svg id="legend-svg"></svg>
-            <p>Les valeurs sont colorées selon leur quantile. Le rayon des cercles correspond au nombre de points du joueur.</p>
+            <svg id="scale-svg"></svg>
+            <p>La couleur et le rayon des cercles varie selon l'attribut sélectionné. Les couleurs dépendent du quantile.</p>
             <button onclick="ghostLow('points', 1892)">Mettre en évidence les 10 meilleurs</button>
-<button onclick="unghostAll()">Réinitialiser</button>
-<button onclick="toggleLabels()">Toggle labels</button>
-</header>
-</div>
+            <button onclick="unghostAll()">Réinitialiser</button>
+            <button onclick="toggleLabels()">Toggle labels</button>
+        </div>
+    </header>
+
+    <script src="makeScale.js"></script>
+
+
 <script>
-    /* BEGIN Scale */
-    var legendSvg = d3.select('#legend-svg')
-        .attr('width', 400)
-        .attr('height', 40)
-        .append('g')
-
-    legendSvg.append('rect')
-        .attr('width', 280)
-        .attr('height', 15)
-        .attr("transform", "translate(10,0)")
-        .style('fill', 'url(#gradientScale)');
-
-    var legendScale = d3.scaleLinear()
-        .domain([0, 100])
-        .range([0, 280]);
-
-    var legendAxis = d3.axisBottom()
-        .scale(legendScale)
-        .tickValues(d3.range(0, 100, 10))
-        .tickFormat(d3.format("d"));
-
-    legendSvg.append("g")
-        .attr("class", "legend axis")
-        .attr("transform", "translate(10,15)")
-        .call(legendAxis);
-
-    var gradient = legendSvg.append('defs')
-        .append('linearGradient')
-        .attr('id', 'gradientScale')
-        .attr('x1', '0%') // left
-        .attr('y1', '0%')
-        .attr('x2', '100%') // to right
-        .attr('y2', '0%')
-        .attr('spreadMethod', 'pad');
-
-
-    gradient.append("stop")
-        .attr("offset", "0%")
-        .attr("stop-color", "#5e4fa2")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "10%")
-        .attr("stop-color", "#5e4fa2")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "10%")
-        .attr("stop-color", "#3388bd")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "20%")
-        .attr("stop-color", "#3388bd")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "20%")
-        .attr("stop-color", "#66c2a5")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "30%")
-        .attr("stop-color", "#66c2a5")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "30%")
-        .attr("stop-color", "#abdda4")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "40%")
-        .attr("stop-color", "#abdda4")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "40%")
-        .attr("stop-color", "#e6f598")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "50%")
-        .attr("stop-color", "#e6f598")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "50%")
-        .attr("stop-color", "#fee08b")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "60%")
-        .attr("stop-color", "#fee08b")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "60%")
-        .attr("stop-color", "#fdae61")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "70%")
-        .attr("stop-color", "#fdae61")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "70%")
-        .attr("stop-color", "#f46d43")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "80%")
-        .attr("stop-color", "#f46d43")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "80%")
-        .attr("stop-color", "#d53e4f")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "90%")
-        .attr("stop-color", "#d53e4f")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "90%")
-        .attr("stop-color", "#9e0142")
-        .attr("stop-opacity", 1);
-    gradient.append("stop")
-        .attr("offset", "100%")
-        .attr("stop-color", "#9e0142")
-        .attr("stop-opacity", 1);
-    /* END scale */
-
     /* Global data for the svgs */
     const diameter = 800;
     const margin = 4;
