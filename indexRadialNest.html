@@ -263,7 +263,7 @@ nav ul li a {
                 });
                 return attributedClass;
             });
-            d3.select("p.structure").append("span").text(attribute + " (" + nbOfClass + " groupes)");
+            d3.select("p.structure").append("span").text(attribute);
         })
 
         return nest.entries(data);
