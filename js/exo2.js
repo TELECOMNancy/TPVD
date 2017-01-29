@@ -24,42 +24,34 @@ d3.csv("nba-no-hierarchy-exo2.csv", function (error, players) {
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(players[0]).filter(function (d) {
         values[d] = players.map(function (p) { return p[d] });
-
-        if ( // Colonnes cachées
-            d === "Player" ||
-            d === "Team" ||
-            d === "Conference" ||
-            d === "Division" ||
-            d === "Fields Goals Made/Game" ||
-            d === "Field Goal Percentage" ||
-            d === "Adjusted Field Goal Percentage" ||
-            d === "3 Points Made/Game" ||
-            d === "Blocks" ||
-            d === "2 Points Made/Game" ||
-            d === "Defensive Rebounds" ||
-            d === "Throws attempted" ||
-            d === "Throws Made/Game " ||
-            d === "Free Throws Attempted/Game" ||
-            d === "Offensive Rebounds" ||
-            d === "Assists/Game" ||
-            d === "Free Throws Attempted" ||
-            d === "3 Points Made" ||
-            d === " 3 Points Attempted" ||
-            d === "Total Rebounds" ||
-            d === "Free Throws Attempted/Game" ||
-            d === "Steals" ||
-            d === "Personal Fouls" ||
-            d === "3 Point Percentage" ||
-            d === "Offensive Rebounds/Game" ||
-            d === "3 Points Attempted/Game" ||
-            d === "Blocks/Game" ||
-            d === "3 Points Attempted" ||
-            d === " Assists" ||
-            d === "2 Points Attempted" ||
-            d === "2 Points Made" ||
-            d === "Steals/Game"
-        ) return false;
-        else if (false) { // Colonnes catégorielles
+        if ( !(// Colonnes à afficher
+        d === "Points" || 
+        d === "Defensive Rebounds" || 
+        d === "Field Goals Attempted/Game" || 
+        d === "Steals" || 
+        d === "Turnovers" || 
+        d === "Minutes" || 
+        d === "Field Goals Attempted" || 
+        d === "Points/Game" || 
+        d === "Field Goals Made" || 
+        d === "2 Points Attempted" || 
+        d === "2 Points Made" || 
+        d === "2 Points Attempted/Game" || 
+        d === "2 Points Made/Game" || 
+        d === "Free Throws Made" || 
+        d === "Free Throws Attempted" || 
+        d === "Field Goals Made/Game"|| 
+        d === "Assists" || 
+        d === "Games Started" || 
+        d === "Games Played " || 
+        d === "Personal Fouls" || 
+        d === "Total Rebounds" || 
+        d === "Free Throws Made/Game" || 
+        d === "Free Throws Attempted/Game" || 
+        d === "Minutes/Game" || 
+        d === "Offensive"
+        )) return false;
+        if (false) { // Colonnes catégorielles
             y[d] = d3.scale.ordinal()
                 .domain(players.map(function (p) { return p[d]; }))
                 .rangePoints([height, 0]);
