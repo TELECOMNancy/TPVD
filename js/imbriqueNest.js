@@ -159,10 +159,10 @@ function makeQuantileScale(values) {
 
 function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
     svgData.nodes
-        .filter(function (d) { return d.value < limit && !d.children; }) // Hide all the circles below the limit
+        .filter(function (d) { return d.value < limit && d.data.Player; }) // Hide all the circles below the limit
         .forEach(function (d, index) {
             d3.selectAll(".node--leaf." + escapeString(d.data.Player))
-                .filter(function (dd) { return d.parent.value === dd.parent.value }) // eviter de cacher d'autres joueurs du même nom
+                .filter(function (dd) { ;return d.data.Points === dd.data.Points }) // eviter de cacher d'autres joueurs du même nom
                 .classed("ghost", true);
         });
 }
