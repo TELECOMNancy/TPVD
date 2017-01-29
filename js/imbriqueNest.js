@@ -19,23 +19,40 @@ d3.tsv("nba-no-hierarchy.txt", function (error, data) {
 
     data = makeNest(data, [
         {
-            attribute: "Minutes/Game",
+            attribute: "Field Goals Made/Game",
             classes: ["top", "topmed", "lowmed", "low"]
         },
         {
-            attribute: "Turnovers/Game",
+            attribute: "Free Throws Made",
             classes: ["top", "topmed", "lowmed", "low"]
         },
         {
-            attribute: "Total Rebounds/Game",
+            attribute: "2 Points Attempted/Game",
             classes: ["top", "topmed", "lowmed", "low"]
         },
         {
-            attribute: "Games Played",
+            attribute: "2 Points Made/Game",
             classes: ["top", "topmed", "lowmed", "low"]
-        }
+        },
+        {
+            attribute: "Turnovers",
+            classes: ["top", "topmed", "lowmed", "low"]
+        },
+        {
+            attribute: "Minutes",
+            classes: ["top", "topmed", "lowmed", "low"]
+        },
+        {
+            attribute: "Field Goals Attempted/Game",
+            classes: ["top", "topmed", "lowmed", "low"]
+        },
+        {
+            attribute: "Steals",
+            classes: ["top", "topmed", "lowmed", "low"]
+        },
     ]);
 
+    
     data = { key: "nba", values: data };
 
     pointsValues = [];

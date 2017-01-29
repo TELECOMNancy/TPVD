@@ -38,14 +38,17 @@ d3.tsv("nba-no-hierarchy.txt", function (error, data) {
             classes: ["top", "low"]
         },
         {
-            attribute: "Field Goals Made/Game",
+            attribute: "Minutes",
             classes: ["top", "low"]
         },
         {
-            attribute: "Total Rebounds/Game",
+            attribute: "Field Goals Attempted/Game",
             classes: ["top", "low"]
         },
-
+        {
+            attribute: "Steals",
+            classes: ["top", "low"]
+        },
     ]);
 
     data = { key: "nba", values: data };
