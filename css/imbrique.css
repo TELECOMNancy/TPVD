@@ -1,0 +1,58 @@
+h2 {
+    font-size: 12px;
+    margin: 0;
+    padding:0;
+    text-align: center;
+}
+.node {
+  cursor: pointer;
+}
+
+.node--leaf {
+  fill: white;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff, 0 -2px 0 #fff;
+}
+
+.label,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+}
+
+circle.hovered{
+    
+  stroke: black;
+  stroke-width: 1.5px;
+    }
+
+.ghost {
+ opacity: 0.2;
+}
+
+.hidden-labels {
+    display: none !important;
+}
+
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}

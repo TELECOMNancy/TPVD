@@ -1,241 +1,83 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <title>Treemap</title>
-<style>
-svg.graph {
-  font: 10px sans-serif;
-}
-
-nav ul {
-    list-style: none;
-    padding:0;
-    display: flex;
-    flex-wrap: wrap;
-}
- nav ul li {
-    background: #ddd;
-    padding:3px 6px;
-    margin: 0 5px;
-    border-radius: 10px;
-}
- nav ul li a {
-    text-decoration: none;
-    cursor: pointer;
-}
-.ghost{
-    opacity: 0.2;
-}
-</style>
-<nav>
-    <ul>
-        <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
-        <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
-        <li><a href="IndexIcicle.html">Glaçons</a></li>
-        <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
-        <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
-        <li><a href="indexTreemap.html">Treemap</a></li>
-        <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
-    </ul>
-</nav>
-<header>
-    <h1>TP - Bryan Colle et Ali Daoudi</h1>
-    <div class="scale">
-        <svg id="scale-svg"></svg>
-        <p>Les joueurs sont colorés et regroupés par leur équipe. L'équipe, le nombre total de points ainsi que la valeur de l'attribut couramment sélectionné du joueur s'affichent au survol. Les joueurs peuvent être colorés selon le quantile de l'attribut sélectionné en changeant la coloration.</p>
-        <button onclick="ghostLow()">Mettre en évidence les 10 meilleurs</button>
-        <button onclick="unghostAll()">Réinitialiser</button>
-        <button onclick="toggleColor()">Changer la coloration</button>
-        <select name="attribute" id="attribute-selection" onchange="updateTreeMap()">
-            <option value="Points" selected>Points</option>
+<link rel="stylesheet" href="css/treemap.css">
+<body>
+    <nav>
+        <ul>
+            <li><a href="indexImbrique.html">Cercles imbriqués</a></li>
+            <li><a href="indexImbriqueNest.html">Cercles imbriqués selon les attributs</a></li>
+            <li><a href="IndexIcicle.html">Glaçons</a></li>
+            <li><a href="IndexRadial.html">Noeuds-liens radial</a></li>
+            <li><a href="indexRadialNest.html">Noeuds-liens radial selon la médiane des attributs</a></li>
+            <li><a href="indexTreemap.html">Treemap</a></li>
+            <li><a href="indexExo2.html">Coordonnées parallèles</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>TP - Bryan Colle et Ali Daoudi</h1>
+        <div class="scale">
+            <svg id="scale-svg"></svg>
+            <p>Les joueurs sont colorés et regroupés par leur équipe. L'équipe, le nombre total de points ainsi que la valeur de l'attribut couramment sélectionné du joueur s'affichent au survol. Les joueurs peuvent être colorés selon le quantile de l'attribut sélectionné en changeant la coloration.</p>
+            <button onclick="ghostLow()">Mettre en évidence les 10 meilleurs</button>
+            <button onclick="unghostAll()">Réinitialiser</button>
+            <button onclick="toggleColor()">Changer la coloration</button>
+            <select name="attribute" id="attribute-selection" onchange="updateTreeMap()">
                 <option value="Points" selected>Points</option>
-                <option disabled>-----------</option>
-                <option value="2 Point Percentage">2 Point Percentage</option>
-                <option value="2 Points Attempted">2 Points Attempted</option>
-                <option value="2 Points Attempted/Game">2 Points Attempted/Game</option>
-                <option value="2 Points Made">2 Points Made</option>
-                <option value="2 Points Made/Game">2 Points Made/Game</option>
-                <option value="3 Point Percentage">3 Point Percentage</option>
-                <option value="3 Points Attempted">3 Points Attempted</option>
-                <option value="3 Points Attempted/Game">3 Points Attempted/Game</option>
-                <option value="3 Points Made">3 Points Made</option>
-                <option value="3 Points Made/Game">3 Points Made/Game</option>
-                <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
-                <option value="Assists">Assists</option>
-                <option value="Assists/Game">Assists/Game</option>
-                <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
-                <option value="Blocks">Blocks</option>
-                <option value="Blocks/Game">Blocks/Game</option>
-                <option value="Defensive Rebounds">Defensive Rebounds</option>
-                <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
-                <option value="Field Goal Percentage">Field Goal Percentage</option>
-                <option value="Field Goals Attempted">Field Goals Attempted</option>
-                <option value="Field Goals Attempted/Game">Field Goals Attempted/Game</option>
-                <option value="Field Goals Made">Field Goals Made</option>
-                <option value="Field Goals Made/Game">Field Goals Made/Game</option>
-                <option value="Free Throw Percentage">Free Throw Percentage</option>
-                <option value="Free Throws Attempted">Free Throws Attempted</option>
-                <option value="Free Throws Attempted/Game">Free Throws Attempted/Game</option>
-                <option value="Free Throws Made">Free Throws Made</option>
-                <option value="Free Throws Made/Game">Free Throws Made/Game</option>
-                <option value="Games Played">Games Played</option>
-                <option value="Games Started">Games Started</option>
-                <option value="Minutes">Minutes</option>
-                <option value="Minutes/Game">Minutes/Game</option>
-                <option value="Offensive Rebounds">Offensive Rebounds</option>
-                <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
-                <option value="Personal Fouls">Personal Fouls</option>
-                <option value="Personal Fouls/Game">Personal Fouls/Game</option>
-                <option value="Player">Player</option>
-                <option value="Points/Game">Points/Game</option>
-                <option value="Points/Shot">Points/Shot</option>
-                <option value="Steals">Steals</option>
-                <option value="Steals/Game">Steals/Game</option>
-                <option value="Technical Fouls">Technical Fouls</option>
-                <option value="Technical Fouls/Game">Technical Fouls/Game</option>
-                <option value="Total Rebounds">Total Rebounds</option>
-                <option value="Total Rebounds/Game">Total Rebounds/Game</option>
-                <option value="Turnovers">Turnovers</option>
-                <option value="Turnovers/Game">Turnovers/Game</option>
-        </select>
-    </div>
-</header>
-<svg class="graph" width="1200" height="670"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-
-<script src="makeScale.js"></script>
-
-<script>
-    var svg = d3.select("svg.graph"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
-    
-    var root;
-    var cells;
-    var quantile = false;
-    var points = [];
-    var values = [];
-    var fader = function (color) { return d3.interpolateRgb(color, "#fff")(0.2); },
-        color = d3.scaleOrdinal(d3.schemeCategory20.map(fader)),
-        format = d3.format(",d");
-
-    var treemap = d3.treemap()
-        .tile(d3.treemapResquarify)
-        .size([width, height])
-        .round(true)
-        .paddingInner(1)
-        .padding(1);
-
-    d3.tsv("nba-no-hierarchy.txt", function (error, data) {
-        if (error) throw error;
-        data.map(function(elem) { if (elem.Points) points.push(parseInt(elem.Points)); });
-
-        data = d3.stratify()
-            .id(function (d) { return d.Player; })
-            .parentId(function (d) { return d.Team; })
-            (data);
-        
-        var attribute = d3.select("#attribute-selection").node().value;
-
-        svg.selectAll("*").remove();
-
-        root = d3.hierarchy(data)
-            .sum(function (d) {
-                if(d.data.Points) values.push(parseFloat(d.data.Points));
-                return d.data.Points;
-            })
-            .sort(function (a, b) { return b.value - a.value; });
-        
-        treemap(root);
-
-        cells = svg.selectAll("g")
-            .data(root.leaves())
-            .enter().append("g")
-            .attr("transform", function (d) { return "translate(" + d.x0 + "," + d.y0 + ")"; })
-            .attr("id", function(d) { return "group-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id); });
-
-        cells.append("rect")
-            .attr("id", function (d) { return "rect-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id); })
-            .attr("width", function (d) { return d.x1 - d.x0; })
-            .attr("height", function (d) { return d.y1 - d.y0; })
-            .attr("fill", colorTeam());
-
-        cells.append("clipPath")
-            .attr("id", function (d) { return "clip-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id); })
-            .append("use")
-            .attr("xlink:href", function (d) { return "#rect-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id); });
-
-        cells.append("text")
-            .attr("clip-path", function (d) { return "url(#clip-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id) + ")"; })
-            .selectAll("tspan")
-            .data(function (d) { return d.data.data.Player.split(/(?=[A-Z][^A-Z])/g); })
-            .enter().append("tspan")
-            .attr("x", 4)
-            .attr("y", function (d, i) { return 13 + i * 10; })
-            .text(function (d) { return d; });
-
-        cells.append("title")
-            .text(function (d) { return d.data.id + "\n" + attribute +" : "+ format(d.value) + "\n"+d.data.data.Points+" points\n" + d.parent.data.id; });
-    });
-
-    function colorQuantile() {
-        var color = makeQuantileScale(values);
-        return function(d) { return color(d.value)};
-    }
-
-    function colorTeam() {
-        return function (d) { return color(d.parent.data.id); };
-    }
-
-    function updateTreeMap() {
-        values = [];
-        var attribute = d3.select("#attribute-selection").node().value;
-        treemap(root.sum(
-            function(d) { 
-                if (d.data[attribute]) values.push(d.data[attribute]);
-                return parseFloat(d.data[attribute]); 
-            }
-        ));
-
-        var cellsTransition = cells.transition()
-            .duration(750)
-            .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
-        cellsTransition.select("rect")
-            .attr("width", function(d) { return d.x1 - d.x0 || 0; })
-            .attr("height", function(d) { return d.y1 - d.y0 || 0; })
-            .attr("fill", quantile ? colorQuantile() : colorTeam());
-        cellsTransition.select("title")
-            .text(function (d) { return d.data.id + "\n" + attribute +" : "+ format(d.value) + "\n"+d.data.data.Points+" points\n" + d.parent.data.id; });
-    }
-
-    function toggleColor() {
-        quantile = !quantile;
-        var cellsTransition = cells.transition()
-            .duration(750);
-        cellsTransition.select("rect").attr("fill", quantile ? colorQuantile() : colorTeam());
-    }
-
-    function ghostLow() { // 1892 is the limit to use to highlight 10 best points
-        var tenth = points.sort(function(a,b) { return b-a; })[9];
-        root.descendants()
-            .filter(function (d) { return d.data.data.Points < tenth && !d.children; }) // Hide all the circles below the tenth score
-            .forEach(function(d,i) {
-                d3.selectAll("#group-" + escapeString(d.data.id) + "-" + escapeString(d.parent.data.id))
-                    .classed("ghost", true);
-            }
-        );
-    }
-
-    function makeQuantileScale(values) {
-        return d3.scaleQuantile()
-            .domain(values)
-            .range(["#5e4fa2", "#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"])
-    }
-
-    function unghostAll() {
-        d3.selectAll(".ghost").classed("ghost", false);
-    }
-
-    function escapeString(str) {
-        return str.replace(/[^a-zA-Z]/g, '_')
-    }
-    
-</script>
+                    <option value="Points" selected>Points</option>
+                    <option disabled>-----------</option>
+                    <option value="2 Point Percentage">2 Point Percentage</option>
+                    <option value="2 Points Attempted">2 Points Attempted</option>
+                    <option value="2 Points Attempted/Game">2 Points Attempted/Game</option>
+                    <option value="2 Points Made">2 Points Made</option>
+                    <option value="2 Points Made/Game">2 Points Made/Game</option>
+                    <option value="3 Point Percentage">3 Point Percentage</option>
+                    <option value="3 Points Attempted">3 Points Attempted</option>
+                    <option value="3 Points Attempted/Game">3 Points Attempted/Game</option>
+                    <option value="3 Points Made">3 Points Made</option>
+                    <option value="3 Points Made/Game">3 Points Made/Game</option>
+                    <option value="Adjusted Field Goal Percentage">Adjusted Field Goal Percentage</option>
+                    <option value="Assists">Assists</option>
+                    <option value="Assists/Game">Assists/Game</option>
+                    <option value="Assists/Turnovers Ratio">Assists/Turnovers Ratio</option>
+                    <option value="Blocks">Blocks</option>
+                    <option value="Blocks/Game">Blocks/Game</option>
+                    <option value="Defensive Rebounds">Defensive Rebounds</option>
+                    <option value="Defensive Rebounds/Game">Defensive Rebounds/Game</option>
+                    <option value="Field Goal Percentage">Field Goal Percentage</option>
+                    <option value="Field Goals Attempted">Field Goals Attempted</option>
+                    <option value="Field Goals Attempted/Game">Field Goals Attempted/Game</option>
+                    <option value="Field Goals Made">Field Goals Made</option>
+                    <option value="Field Goals Made/Game">Field Goals Made/Game</option>
+                    <option value="Free Throw Percentage">Free Throw Percentage</option>
+                    <option value="Free Throws Attempted">Free Throws Attempted</option>
+                    <option value="Free Throws Attempted/Game">Free Throws Attempted/Game</option>
+                    <option value="Free Throws Made">Free Throws Made</option>
+                    <option value="Free Throws Made/Game">Free Throws Made/Game</option>
+                    <option value="Games Played">Games Played</option>
+                    <option value="Games Started">Games Started</option>
+                    <option value="Minutes">Minutes</option>
+                    <option value="Minutes/Game">Minutes/Game</option>
+                    <option value="Offensive Rebounds">Offensive Rebounds</option>
+                    <option value="Offensive Rebounds/Game">Offensive Rebounds/Game</option>
+                    <option value="Personal Fouls">Personal Fouls</option>
+                    <option value="Personal Fouls/Game">Personal Fouls/Game</option>
+                    <option value="Player">Player</option>
+                    <option value="Points/Game">Points/Game</option>
+                    <option value="Points/Shot">Points/Shot</option>
+                    <option value="Steals">Steals</option>
+                    <option value="Steals/Game">Steals/Game</option>
+                    <option value="Technical Fouls">Technical Fouls</option>
+                    <option value="Technical Fouls/Game">Technical Fouls/Game</option>
+                    <option value="Total Rebounds">Total Rebounds</option>
+                    <option value="Total Rebounds/Game">Total Rebounds/Game</option>
+                    <option value="Turnovers">Turnovers</option>
+                    <option value="Turnovers/Game">Turnovers/Game</option>
+            </select>
+        </div>
+    </header>
+    <svg class="graph" width="1200" height="670"></svg>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="js/makeScale.js"></script>
+    <script src="js/treemap.js"></script>
+</body>

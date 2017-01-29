@@ -1,4 +1,40 @@
 Player	Conference	Division	Team	Games Played	Games Started	Minutes	Minutes/Game	Points	Points/Game	Offensive Rebounds	Offensive Rebounds/Game	Defensive Rebounds	Defensive Rebounds/Game	Total Rebounds	Total Rebounds/Game	Assists	Assists/Game	Steals	Steals/Game	Blocks	Blocks/Game	Turnovers	Turnovers/Game	Assists/Turnovers Ratio	Personal Fouls	Personal Fouls/Game	Technical Fouls	Technical Fouls/Game	Field Goals Made	Field Goals Attempted	Field Goals Made/Game	Field Goals Attempted/Game	Field Goal Percentage	3 Points Made	3 Points Attempted	3 Points Made/Game	3 Points Attempted/Game	3 Point Percentage	Free Throws Made	Free Throws Attempted	Free Throws Made/Game	Free Throws Attempted/Game	Free Throw Percentage	2 Points Made	2 Points Attempted	2 Points Made/Game	2 Points Attempted/Game	2 Point Percentage	Points/Shot	Adjusted Field Goal Percentage
+NBA			
+Eastern Conference			NBA
+Western Conference			NBA
+Central Division			Eastern Conference
+Atlantic Division			Eastern Conference
+Midwest Division			Western Conference
+Pacific Division			Western Conference
+Atlanta Hawks			Central Division
+Milwaukee Bucks			Central Division
+Toronto Raptors			Central Division
+Charlotte Hornets			Central Division
+Indiana Pacers			Central Division
+Detroit Pistons			Central Division
+Cleveland Cavaliers			Central Division
+Chicago Bulls			Central Division
+Philadelphia 76ers			Atlantic Division
+Miami Heat			Atlantic Division
+New York Knicks			Atlantic Division
+Orlando Magic			Atlantic Division
+Boston Celtics			Atlantic Division
+New Jersey Nets			Atlantic Division
+Washington Wizards			Atlantic Division
+San Antonio Spurs			Midwest Division
+Utah Jazz			Midwest Division
+Dallas Mavericks			Midwest Division
+Minnesota Timberwolves			Midwest Division
+Houston Rockets			Midwest Division
+Denver Nuggets			Midwest Division
+Vancouver Grizzlies			Midwest Division
+Los Angeles Lakers			Pacific Division
+Sacramento Kings			Pacific Division
+Phoenix Suns			Pacific Division
+Portland Trail Blazers			Pacific Division
+Seatle SuperSonices			Pacific Division
+Los Angeles Clippers			Pacific Division
+Golden State Warriors			Pacific Division
 Terry	Eastern Conference	Central Division	Atlanta Hawks	82	77	3089	37.7	1617	19.7	42	0.5	227	2.8	269	3.3	403	4.9	104	1.27	12	0.15	237	2.9	1.7	204	2.5	0	0	595	1366	7.3	16.7	0.436	124	314	1.5	3.8	0.395	303	358	3.7	4.4	0.846	471	1052	471	1052	0.448	1.18	0.481
 Johnson	Eastern Conference	Central Division	Atlanta Hawks	78	21	1313	16.8	397	5.1	56	0.7	122	1.6	178	2.3	64	0.8	43	0.55	30	0.38	93	1.2	0.69	134	1.7	0	0	146	390	1.9	5	0.374	41	127	0.5	1.6	0.323	64	87	0.8	1.1	0.736	105	263	105	263	0.399	1.02	0.427
 Henderson	Eastern Conference	Central Division	Atlanta Hawks	73	42	1810	24.8	769	10.5	181	2.5	225	3.1	406	5.6	50	0.7	51	0.7	29	0.4	126	1.7	0.4	164	2.2	3	0	298	671	4.1	9.2	0.444	0	1	0	0	0	173	271	2.4	3.7	0.638	298	670	298	670	0.445	1.15	0.444

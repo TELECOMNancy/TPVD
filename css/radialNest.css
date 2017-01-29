@@ -1,0 +1,81 @@
+.node circle {
+  fill: #999;
+}
+
+.node--internal[class^="low"] circle {
+  fill: indigo;
+}
+
+.node--internal[class^="low"] circle.hovered {
+    stroke: indigo;
+    stroke-width:10px;
+}
+.link.low {
+    stroke: indigo;
+}
+.node--internal[class^="top"] circle {
+    fill: orangered;
+}
+.node--internal[class^="top"] circle.hovered {
+    stroke: orangered;
+    stroke-width:10px;
+}
+
+.link.top {
+    stroke: orangered;
+}
+.node text {
+  font: 10px sans-serif;
+}
+
+.node--leaf text {
+    font-size: 7px;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-opacity: 0.4;
+  stroke-width: 1.5px;
+}
+
+.ghost {
+   opacity: 0.2;
+}
+
+p.structure span:not(:first-child):before {
+    content: ' > ';
+}
+
+p.structure span {
+    color: #888888;
+}
+
+p.structure {
+    text-align: center;
+    background: lightgoldenrodyellow;
+    padding: 10px;
+}
+
+nav ul {
+    list-style: none;
+    padding:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    background: #ddd;
+    padding:3px 6px;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    cursor: pointer;
+}
