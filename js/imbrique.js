@@ -108,15 +108,14 @@ function makeQuantileScale(values) {
 // Always keep at least Points
 makeSVG("points", "Points");
 makeSVG("games_played", "Games Played");
-makeSVG("games_started", "Games Started");
-makeSVG("minutes_per_game", "Minutes/Game");
-makeSVG("total_rebounds_per_game", "Total Rebounds/Game");
-makeSVG("offensive_rebounds_per_game", "Offensive Rebounds/Game");
-makeSVG("defensive_rebounds_per_game", "Defensive Rebounds/Game");
-makeSVG("steals_per_game", "Steals/Game");
-makeSVG("blocks_per_game", "Blocks/Game");
-makeSVG("personal_fouls_per_game", "Personal Fouls/Game");
-makeSVG("technical_fouls", "Technical Fouls/Game");
+makeSVG("minutes", "Minutes");
+makeSVG("field_goals_made_per_game", "Field Goals Made/Game");
+makeSVG("free_throws_made","Free Throws Made");
+makeSVG("two_pts_attempted_per_game","2 Points Attempted/Game");
+makeSVG("two_pts_made_per_game","2 Points Made/Game");
+makeSVG("turnovers","Turnovers");
+makeSVG("field_goals_attempted_per_game","Field Goals Attempted/Game");
+makeSVG("steals","Steals");         
 
 function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
     svgs[svgId].nodes

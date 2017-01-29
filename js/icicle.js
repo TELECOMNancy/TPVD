@@ -117,13 +117,13 @@ function changeAttribute(selector) {
         svgArray.values.push(d.data.data[attribute]);
         d.value = d.data.data[attribute];
     })
-    maxValue = svgArray.values.sort(function (a, b) { return b - a; })[0];
-    console.log(maxValue);
+    svgArray.values = svgArray.values.sort(function(a,b) { return b-a; });
+    maxValue = svgArray.values[0];
     var quantile = makeQuantileScale(svgArray.values);
     svgArray.nodes.filter(function (d) { return !d.children; }).forEach(function (d, i) {
         d3.select(".parent-" + escapeString(d.parent.data.id) + "." + escapeString(d.data.id) + " > rect")
             .attr("style", null)
-            .style("fill", quantile(d.value))
+            .style("fill", function(d) { return quantile(d.value); })
             .attr("width", function (d) { return d.children ? d.y1 - d.y0 : (d.y1 - d.y0) * d.value / maxValue; })
 
     });
