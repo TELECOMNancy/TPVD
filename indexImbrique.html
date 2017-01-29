@@ -134,7 +134,7 @@ nav ul li a {
                     .enter().append("circle")
                     .attr("id", function (d) { return d.data.id.replace(/[\s\']/g, "") })
                     .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-                    .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseInt(d.data.data[attribute])) : "#fafafa"; })
+                    .style("fill", function (d, i) { return d.data.data[attribute] !== undefined ? color(parseFloat(d.data.data[attribute])) : "#fafafa"; })
                     .on("click", function (d) { if (svgs[svgId].focus !== d) zoomAll(d), d3.event.stopPropagation(); })
                     .on("mouseover", function(d) { 
                         currentlyHovered = d.data.id.split("-")[0].replace(/[\s\']/g, "");
@@ -208,7 +208,7 @@ nav ul li a {
         makeSVG("steals_per_game", "Steals/Game");
         makeSVG("blocks_per_game", "Blocks/Game");
         makeSVG("personal_fouls_per_game", "Personal Fouls/Game");
-        makeSVG("technical_fouls", "Technical Fouls");
+        makeSVG("technical_fouls", "Technical Fouls/Game");
 
         function ghostLow(svgId, limit) { // 1892 is the limit to use to highlight 10 best points
             svgs[svgId].nodes
